@@ -1,0 +1,108 @@
+{% extends 'core/base.html' %}
+
+{% block title %}{{ profile_user.username }}'s Profile - InstaClone{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <i class="bi bi-person-circle fs-1 me-3"></i>
+                        <div>
+                            <h2 class="mb-1">{{ profile_user.username }}</h2>
+                            <div class="d-flex gap-4 mb-2">
+                                <div>
+                                    <strong>{{ posts.count }}</strong> posts
+                                </div>
+                                <div>
+                                    <strong>{{ followers_count }}</strong> followers
+                                </div>
+                                <div>
+                                    <strong>{{ following_count }}</strong> following
+                                </div>
+                            </div>
+                            {% if user != profile_user %}
+                                <button class="btn {% if is_following %}btn-secondary{% else %}btn-primary{% endif %} follow-button" 
+                                        data-username="{{ profile_user.username }}"
+                                        data-following="{{ is_following|lower }}">
+                                    {% if is_following %}
+                                        <i class="bi bi-check-lg"></i> Following
+                                    {% else %}
+                                        <i class="bi bi-plus-lg"></i> Follow
+                                    {% endif %}
+                                </button>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-3">
+                {% for post in posts %}
+                    <div class="col-md-4">
+                        <div class="card">
+                            <a href="{% url 'post-detail' post.pk %}">
+                                <img src="{{ post.image.url }}" class="card-img-top" alt="Post image">
+                            </a>
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="col-12">
+                        <div class="card p-5 text-center">
+                            <i class="bi bi-camera fs-1 mb-3"></i>
+                            <h3>No Posts Yet</h3>
+                            <p class="text-muted">When you share photos and videos, they'll appear on your profile.</p>
+                            {% if user == profile_user %}
+                                <a href="{% url 'post-create' %}" class="btn btn-primary">
+                                    <i class="bi bi-plus-circle"></i> Share Your First Photo
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    $(document).ready(function() {
+        $('.follow-button').click(function() {
+            const button = $(this);
+            const username = button.data('username');
+            const isFollowing = button.data('following') === 'true';
+            
+            $.ajax({
+                url: `/user/${username}/follow/`,
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                success: function(data) {
+                    if (data.is_following) {
+                        button.removeClass('btn-primary').addClass('btn-secondary');
+                        button.html('<i class="bi bi-check-lg"></i> Following');
+                        button.data('following', 'true');
+                    } else {
+                        button.removeClass('btn-secondary').addClass('btn-primary');
+                        button.html('<i class="bi bi-plus-lg"></i> Follow');
+                        button.data('following', 'false');
+                    }
+                    
+                    // Update followers count
+                    button.closest('.card-body').find('strong').eq(1).text(data.followers_count);
+                },
+                error: function(xhr) {
+                    if (xhr.status === 400) {
+                        alert(xhr.responseJSON.error);
+                    }
+                }
+            });
+        });
+    });
+</script>
+{% endblock %} 
