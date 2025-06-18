@@ -185,3 +185,29 @@ def suggestions(request):
 
     context = {"suggested_users": suggested_users, "title": "Suggestions"}
     return render(request, "core/suggestions.html", context)
+
+
+@login_required
+def followers(request, username):
+    user = get_object_or_404(User, username=username)
+    followers_list = Follow.objects.filter(following=user).select_related("follower")
+
+    context = {
+        "profile_user": user,
+        "followers": followers_list,
+        "title": f"{user.username}'s Followers",
+    }
+    return render(request, "core/followers.html", context)
+
+
+@login_required
+def following(request, username):
+    user = get_object_or_404(User, username=username)
+    following_list = Follow.objects.filter(follower=user).select_related("following")
+
+    context = {
+        "profile_user": user,
+        "following": following_list,
+        "title": f"{user.username}'s Following",
+    }
+    return render(request, "core/following.html", context)

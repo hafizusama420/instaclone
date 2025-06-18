@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ profile_user.username }}'s Followers - InstaClone</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      .follower-text {
+        margin-left: 0.75rem; /* or 1rem if you want more space */
+      }
+
+      body {
+        font-family: system-ui, sans-serif;
+        background-color: #f4f4f4;
+        color: #333;
+        min-height: 100vh;
+      }
+
+      .container {
+        max-width: 600px;
+        margin: 2rem auto;
+        padding: 1rem;
+      }
+
+      .header {
+        background-color: white;
+        padding: 1.5rem;
+        border-radius: 8px;
+        margin-bottom: 2rem;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+        text-align: center;
+      }
+
+      .header h1 {
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+      }
+
+      .back-link {
+        display: inline-block;
+        text-decoration: none;
+        color: #007bff;
+        font-weight: 500;
+        margin-bottom: 1rem;
+      }
+
+      .back-link:hover {
+        text-decoration: underline;
+      }
+
+      .stats {
+        font-size: 0.9rem;
+        color: #666;
+      }
+
+      .followers-grid {
+        display: grid;
+        gap: 1rem;
+      }
+
+      .follower-card {
+        background-color: white;
+        padding: 1rem;
+        border-radius: 6px;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+      }
+
+      .follower-info {
+        display: flex;
+        align-items: center;
+      }
+
+      .follower-details {
+        display: flex;
+        align-items: center;
+        flex: 1;
+      }
+
+      .avatar {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background-color: #007bff;
+        color: white;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+      }
+
+      .username-link {
+        text-decoration: none;
+        font-weight: 600;
+        color: #333;
+        font-size: 1rem;
+        margin-left: 10px;
+      }
+
+      .username-link:hover {
+        color: #007bff;
+      }
+
+      .follow-date {
+        font-size: 0.85rem;
+        color: #777;
+        margin-top: 0.25rem;
+        margin-left: 10px;
+      }
+
+      .empty-state {
+        text-align: center;
+        background-color: white;
+        padding: 2rem;
+        border-radius: 8px;
+        box-shadow: 0 1px 6px rgba(0, 0, 0, 0.05);
+      }
+
+      .empty-icon {
+        font-size: 3rem;
+        margin-bottom: 0.5rem;
+        color: #007bff;
+      }
+
+      .empty-title {
+        font-size: 1.3rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+      }
+
+      .empty-text {
+        font-size: 0.95rem;
+        color: #666;
+      }
+
+      @media (max-width: 600px) {
+        .container {
+          padding: 1rem;
+        }
+
+        .header h1 {
+          font-size: 1.5rem;
+        }
+
+        .follower-card {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .container {
+          padding: 1rem;
+        }
+
+        .header {
+          padding: 1.5rem;
+        }
+
+        .header h1 {
+          font-size: 2rem;
+        }
+
+        .follower-card {
+          padding: 1rem;
+        }
+
+        .stats {
+          flex-direction: column;
+          gap: 0.5rem;
+          text-align: center;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <a href="{% url 'profile' profile_user.username %}" class="back-link">
+          <span class="back-arrow">←</span>
+          Back to Profile
+        </a>
+        <h1 class="follower-text">{{ profile_user.username }}'s Followers</h1>
+        <div class="stats">
+          <span>{{ followers|length }} followers</span>
+        </div>
+      </div>
+
+      <div class="followers-grid">
+        {% for follow in followers %}
+        <div class="follower-card">
+          <div class="follower-info">
+            <div class="follower-details">
+              <div class="avatar">
+                {{ follow.follower.username|first|upper }}
+              </div>
+              <div>
+                <a
+                  href="{% url 'profile' follow.follower.username %}"
+                  class="username-link"
+                >
+                  {{ follow.follower.username }}
+                </a>
+                <div class="follow-date">
+                  Following since {{ follow.created_at|date:"M j, Y" }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {% empty %}
+        <div class="empty-state">
+          <div class="empty-icon">👥</div>
+          <div class="empty-title">No Followers Yet</div>
+          <div class="empty-text">
+            {% if user == profile_user %} Share your posts to attract followers!
+            {% else %} {{ profile_user.username }} doesn't have any followers
+            yet. {% endif %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </body>
+</html>

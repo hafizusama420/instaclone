@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ profile_user.username }}'s Following - InstaClone</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: system-ui, sans-serif;
+        background-color: #f4f4f4;
+        color: #333;
+      }
+
+      .container {
+        max-width: 600px;
+        margin: 2rem auto;
+        padding: 1rem;
+      }
+
+      .header {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 8px;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+        text-align: center;
+      }
+
+      .header h1 {
+        font-size: 1.8rem;
+        color: #222;
+        margin-bottom: 0.5rem;
+      }
+
+      .back-link {
+        text-decoration: none;
+        color: #007bff;
+        font-weight: 500;
+        margin-bottom: 1rem;
+        display: inline-block;
+      }
+
+      .stats {
+        font-size: 0.9rem;
+        color: #666;
+      }
+
+      .following-grid {
+        display: grid;
+        gap: 1rem;
+      }
+
+      .following-card {
+        background: white;
+        border-radius: 6px;
+        padding: 1rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .following-info {
+        display: flex;
+        align-items: center;
+      }
+
+      .following-details {
+        display: flex;
+        align-items: center;
+        flex: 1;
+      }
+
+      .avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: #007bff;
+        color: white;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 0.75rem;
+      }
+
+      .username-link {
+        text-decoration: none;
+        font-weight: 600;
+        color: #333;
+      }
+
+      .username-link:hover {
+        color: #007bff;
+      }
+
+      .follow-date {
+        font-size: 0.8rem;
+        color: #888;
+        margin-top: 0.2rem;
+      }
+
+      .empty-state {
+        text-align: center;
+        padding: 2rem;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+      }
+
+      .empty-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+      }
+
+      .empty-text {
+        font-size: 0.9rem;
+        color: #666;
+      }
+
+      @media (max-width: 600px) {
+        .container {
+          padding: 1rem;
+        }
+
+        .header h1 {
+          font-size: 1.5rem;
+        }
+
+        .following-card {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .container {
+          padding: 1rem;
+        }
+
+        .header {
+          padding: 1.5rem;
+        }
+
+        .header h1 {
+          font-size: 2rem;
+        }
+
+        .following-card {
+          padding: 1rem;
+        }
+
+        .stats {
+          flex-direction: column;
+          gap: 0.5rem;
+          text-align: center;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="floating-particles">
+      <div
+        class="particle"
+        style="
+          left: 10%;
+          top: 20%;
+          width: 10px;
+          height: 10px;
+          animation-delay: 0s;
+        "
+      ></div>
+      <div
+        class="particle"
+        style="
+          left: 20%;
+          top: 80%;
+          width: 8px;
+          height: 8px;
+          animation-delay: 2s;
+        "
+      ></div>
+      <div
+        class="particle"
+        style="
+          left: 60%;
+          top: 30%;
+          width: 12px;
+          height: 12px;
+          animation-delay: 4s;
+        "
+      ></div>
+      <div
+        class="particle"
+        style="
+          left: 80%;
+          top: 70%;
+          width: 6px;
+          height: 6px;
+          animation-delay: 1s;
+        "
+      ></div>
+      <div
+        class="particle"
+        style="
+          left: 90%;
+          top: 10%;
+          width: 14px;
+          height: 14px;
+          animation-delay: 3s;
+        "
+      ></div>
+    </div>
+
+    <div class="container">
+      <div class="header">
+        <a href="{% url 'profile' profile_user.username %}" class="back-link">
+          <span class="back-arrow">←</span>
+          Back to Profile
+        </a>
+        <h1>{{ profile_user.username }}'s Following</h1>
+        <div class="stats">
+          <span>{{ following|length }} following</span>
+        </div>
+      </div>
+
+      <div class="following-grid">
+        {% for follow in following %}
+        <div class="following-card">
+          <div class="following-info">
+            <div class="following-details">
+              <div class="avatar">
+                {{ follow.following.username|first|upper }}
+              </div>
+              <div>
+                <a
+                  href="{% url 'profile' follow.following.username %}"
+                  class="username-link"
+                >
+                  {{ follow.following.username }}
+                </a>
+                <div class="follow-date">
+                  Following since {{ follow.created_at|date:"M j, Y" }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% empty %}
+        <div class="empty-state">
+          <div class="empty-icon">🔍</div>
+          <div class="empty-title">Not Following Anyone</div>
+          <div class="empty-text">
+            {% if user == profile_user %} Discover interesting people to follow
+            and see their posts in your feed! {% else %} {{
+            profile_user.username }} isn't following anyone yet. {% endif %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </body>
+</html>
